@@ -1,6 +1,5 @@
 (ns wemail.store.mime
-  (:use wemail.store))
+  (:use wemail.store.message))
 
-(defmethod parse-content :image/* [part]
-  [[(content-type part)
-    (javax.imageio.ImageIO/read (.getContent part))]])
+(defmethod parse-part :image/* [part]
+   (javax.imageio.ImageIO/read (.getContent part)))
