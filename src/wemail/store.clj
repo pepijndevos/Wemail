@@ -20,3 +20,14 @@
 (defn connection [host id pass]
   (doto (.getStore *session* "imaps")
     (.connect host id pass)))
+
+(defn open
+  ([store]
+   (open store "INBOX"))
+  ([store folder]
+   (open store folder :read_write))
+  ([store folder mode]
+   (let [folder (.getFolder store folder)
+         mode (get folder-mode mode)]
+     (.open folder mode)
+     folder)))
