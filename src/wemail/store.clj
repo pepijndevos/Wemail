@@ -19,6 +19,8 @@
 
 (def recipient-type (field-map javax.mail.Message$RecipientType))
 
+(def message-flags (field-map javax.mail.Flags$Flag))
+
 (def ^:dynamic *session* (javax.mail.Session/getDefaultInstance (System/getProperties) nil))
 
 (defn connection [host id pass]

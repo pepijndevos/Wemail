@@ -1,6 +1,8 @@
 (ns wemail.store.message
+  (:use [clojure.set :only [map-invert]])
   (:require [clojure.string :as s]
-            [clojure.walk :as w]))
+            [clojure.walk :as w]
+            [wemail.store :as store]))
 
 (defn headers [message*]
   (into {}
@@ -49,5 +51,14 @@
     (for [idx (range (.getCount multipart))]
       (parse-content (.getBodyPart multipart idx)))))
 
-(defn message [part]
-  (w/keywordize-keys (message* part)))
+(let [inverse-flags (map-invert store/message-flags)]
+  (defn get-flags [message]
+    (set (map
+      (partial get inverse-flags)
+      (-> message .getFlags .getSystemFlags)))))
+
+(defn message [msg]
+  (assoc
+    (w/keywordize-keys
+      (message* msg))
+    :flags (get-flags msg)))
