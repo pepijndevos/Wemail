@@ -4,7 +4,11 @@
 (defn field-map [cls]
   (into {}
     (for [field (:fields (bean cls))]
-      [(keyword (s/lower-case (.getName field)))
+      [(-> field
+         .getName
+         s/lower-case
+         (s/replace #"_" "-")
+         keyword)
        (.get field cls)])))
 
 (defn properties [props]
@@ -25,7 +29,7 @@
   ([store]
    (open store "INBOX"))
   ([store folder]
-   (open store folder :read_write))
+   (open store folder :read-write))
   ([store folder mode]
    (let [folder (.getFolder store folder)
          mode (get folder-mode mode)]
