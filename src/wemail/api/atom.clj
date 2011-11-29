@@ -1,6 +1,7 @@
 (ns wemail.api.atom
   (:use [ring.util.response :only [response]]
         wemail.store.folder
+        [wemail.store.message :only [simple-content]]
         wemail.store
         [clojure.set :only [rename-keys]]
         armagedom))
@@ -14,10 +15,12 @@
 (defn item [message]
   (let [mapping {:subject :title
                  :message-id :id
-                 :date :updated}]
+                 :date :updated
+                 :content :summary}]
     (-> message
       (rename-keys mapping)
       (select-keys (vals mapping))
+      (update-in [:summary] simple-content)
       map-syntax
       (->> (cons :entry)))))
 
@@ -31,5 +34,8 @@
 
 (defn mailbox [{session :login :as req} path]
   (when session
+    (let [mbox (if (seq path)
+                 (open session (apply str (interpose \/ path)))
+                 (open session))]
     (atom-response
-      (feed header (messages (open session))))))
+      (feed header (messages mbox))))))

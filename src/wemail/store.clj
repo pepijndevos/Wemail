@@ -34,6 +34,10 @@
    (open store folder :read-write))
   ([store folder mode]
    (let [folder (.getFolder store folder)
-         mode (get folder-mode mode)]
-     (.open folder mode)
+         mode (get folder-mode mode)
+         holds-messages? (:holds-messages folder-mode)]
+     (when (= holds-messages?
+              (bit-and holds-messages?
+                       (.getType folder)))
+       (.open folder mode))
      folder)))

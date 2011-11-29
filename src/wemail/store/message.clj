@@ -62,3 +62,11 @@
     (w/keywordize-keys
       (message* msg))
     :flags (get-flags msg)))
+
+(defn simple-content
+  "recur into the first part,
+  which should contain the most basic message format."
+  [m]
+  (if-let [c (or (:content m) (:content (first m)))]
+    (recur c)
+    m))
